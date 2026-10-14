@@ -7,7 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>tutorial-blog – Coltran's Practice Website</title>
+<title>tutorial-blog – Tutorial Blog 
+  on Linear Regression</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -111,8 +112,20 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#tutorial-on-linear-regression" id="toc-tutorial-on-linear-regression" class="nav-link active" data-scroll-target="#tutorial-on-linear-regression">Tutorial on Linear Regression</a></li>
+  <li><a href="#load-the-data" id="toc-load-the-data" class="nav-link" data-scroll-target="#load-the-data">2. Load the Data<br>
+  </a></li>
+  <li><a href="#select-your-variables" id="toc-select-your-variables" class="nav-link" data-scroll-target="#select-your-variables">3. Select Your Variables<br>
+  </a></li>
+  <li><a href="#build-your-linear-model" id="toc-build-your-linear-model" class="nav-link" data-scroll-target="#build-your-linear-model">4. Build Your Linear Model<br>
+  </a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
@@ -120,9 +133,145 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<pre><code>r</code></pre>
+<section id="tutorial-on-linear-regression" class="level3">
+<h3 class="anchored" data-anchor-id="tutorial-on-linear-regression">Tutorial on Linear Regression</h3>
+<p>In this tutorial I am going to show you how to do simple linear regression on data and a question of your choosing. You can follow along with a data set of your choosing or use the data set in this tutorial( found here). Linear regression is a very useful tool in <em>data science</em> and statistics. Linear regression allows you to show the effect of one or more predictor variables on a response variable you are interested in.</p>
+<p>tutorial body ## 1. Find a Data Set Start with a question you want to answer: My question is: how does age and number of nearby stores affect the price of a house.</p>
+<p>Before we start our analysis let’s check a few things.</p>
+<ul>
+<li>What each row represents.<br>
+</li>
+<li>How each variable is measured.<br>
+</li>
+<li>Whether values are missing.<br>
+</li>
+<li>Whether the observations are relevant to your question.<br>
+</li>
+<li>Whether you have permission to use and share the data.</li>
+</ul>
+<p>For this example, assume we have a txt file named <code>RealEstate copy.txt</code> with these columns:<br>
+<br>
+| Column | Description |<br>
+|—|—|<br>
+| <code>age</code> | Age of a house in years |<br>
+| <code>price</code> | Price of a house in $10000|<br>
+| <code>stores</code> | Number of stores within walking distance |<br>
+| <code>metro</code> | Number of trains within walking distance |<br>
+| <code>trails</code>. | NUmber of trails within walking distance |</p>
+</section>
+<section id="load-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-the-data">2. Load the Data<br>
+</h2>
+<p>We will use <code>pandas</code> to work with the data and <code>statsmodels</code> to fit the regression.<br>
+</p>
+<p>If these packages are not installed, run this command in your terminal:<br>
+bash python -m pip install pandas statsmodels</p>
+<p>Then import the packages and read the CSV file:</p>
+<p>python import pandas as pd import statsmodels.formula.api as smf</p>
+<p>data = pd.read_csv(“RealEstate copy.txt”, sep=r”+“)</p>
+<p>the <code>sep</code> argument tells the pd.read_csv function what your values are separated by in the data file.</p>
+<p>For this relative file path to work, the CSV must be in Python’s current working directory.</p>
+<p>Inspect the data before analyzing it:</p>
+<p>python print(data.head()) print(data.columns) print(data.dtypes) print(data.isna().sum())</p>
+<p>These commands display the first few rows, column names, data types, and number of missing values in each column.</p>
+<p>Check that numeric measurements were loaded as numeric columns. Unexpected text, units, or formatting can prevent the model from treating them correctly.</p>
+</section>
+<section id="select-your-variables" class="level2">
+<h2 class="anchored" data-anchor-id="select-your-variables">3. Select Your Variables<br>
+</h2>
+<p>Choose the outcome you want to explain and the predictor you want to use.</p>
+<p>For our question:</p>
+<ul>
+<li>Response variable: <code>price</code>.</li>
+<li>Predictor variable: <code>age</code>.</li>
+</ul>
+<p>Select these columns:</p>
+<p>python model_data = data[[“price”, “age”]].copy()</p>
+<p>For this introductory example, remove rows missing either selected variable:</p>
+<p>print(“Rows before cleaning:”, len(model_data))</p>
+<p>model_data = model_data.dropna()</p>
+<p>print(“Rows after cleaning:”, len(model_data)) print(model_data.describe())</p>
+<p>Removing incomplete rows is a simple starting point, but it can change which projects your analysis represents. Investigate why values are missing rather than treating deletion as an automatic solution.</p>
+<p>Also check for implausible values and confirm that all measurements use consistent units.</p>
+</section>
+<section id="build-your-linear-model" class="level2">
+<h2 class="anchored" data-anchor-id="build-your-linear-model">4. Build Your Linear Model<br>
+</h2>
+<p>A simple linear regression model has this structure:</p>
+<p><code>text duration_days = intercept + slope \'d7 age + error\</code><br>
+</p>
+<p>The intercept represents the modeled duration when age is zero. The slope represents the modeled change in price associated with one additional year.<br>
+<br>
+The error captures the difference between an observed duration and the model’s underlying relationship.<br>
+<br>
+### Fit the model in Python<br>
+<br>
+Use this formula:<br>
+<br>
+<code>python\ model = smf.ols(\     formula="price ~ age",\     data=model_data\ ).fit()\</code><br>
+<br>
+The formula reads:<br>
+<br>
+<code>text\ response variable ~ predictor variable\</code><br>
+<br>
+Here is what the code does:<br>
+<br>
+- <code>smf.ols()</code> sets up an ordinary least squares regression.<br>
+- <code>"price ~ age"</code> identifies the response and predictor.<br>
+- <code>data=model_data</code> identifies the dataset containing those columns.<br>
+- <code>.fit()</code> estimates the model’s coefficients.<br>
+<br>
+The formula interface includes an intercept by default. Ordinary least squares chooses coefficients that minimize the sum of squared residuals'97the squared differences between observed and fitted outcomes.<br>
+<br>
+### View the results<br>
+<br>
+<code>python\ print(model.summary())\ print(model.params)\</code><br>
+<br>
+The summary includes coefficient estimates, standard errors, confidence intervals, p-values, and R-squared.<br>
+<br>
+For illustration only, suppose the fitted equation were:<br>
+<br>
+<code>text\ predicted price = 30 + 0.002 \'d7 age\</code><br>
+<br>
+A year old project would then have a predicted duration of:<br>
+<br>
+<code>text\ 30 + 0.002 \'d7 10,000 = 50 days\</code><br>
+<br>
+These coefficients are hypothetical, not results from an actual dataset.<br>
+<br>
+### Predict a new outcome<br>
+<br>
+Use the fitted model to predict price for a new project:<br>
+<br>
+<code>python\ new_house = pd.DataFrame(\{\     "age": [10000]\ \})\ \ predicted_price = model.predict(new_house)\ \ print(predicted_price)\</code><br>
+<br>
+The prediction uses the coefficients estimated from your data. Avoid predicting far outside the range of project sizes used to fit the model.<br>
+<br>
+### Add another predictor<br>
+<br>
+To include cstores, select the necessary columns and fit a new model:<br>
+<br>
+<code>python\ multiple_model_data = data[\     ["price", "age", "stores"]\ ].dropna()\ \ multiple_model = smf.ols(\     formula="price ~ age + stores",\     data=multiple_model_data\ ).fit()\ \ print(multiple_model.summary())\</code><br>
+<br>
+The model now has this structure:<br>
+<br>
+<code>text\ duration_days =\     intercept\     + coefficient_1 \'age\     + coefficient_2 \'stores\     + error\</code><br>
+</p>
+<p>Each coefficient describes an association with duration while holding the other included predictor constant. ## 5. Check Before Drawing Conclusions</p>
+<p>Fitting the model is only part of the analysis. Before interpreting it:</p>
+<ul>
+<li>Check whether the relationship is reasonably linear.</li>
+<li>Examine residuals for patterns or changing spread.</li>
+<li>Investigate unusual or influential observations.</li>
+<li>Consider whether observations are independent.</li>
+<li>If prediction is your goal, evaluate accuracy on data not used to fit the model.</li>
+</ul>
+<p>Normality of the errors is relevant to conventional small-sample inference, not a requirement for calculating the fitted coefficients.</p>
+<p>A high R-squared does not automatically mean the model is appropriate, and an association does not establish causation. For example, larger crews may be assigned to more difficult projects, so a crew-size coefficient should not automatically be interpreted as the effect of hiring additional workers.</p>
+<p>The goal is to build a model that answers your question and remains credible when checked against the data.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
