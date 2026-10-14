@@ -1,0 +1,224 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww28600\viewh15320\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 # How to Perform Linear Regression on a Data Set\
+\
+Linear regression helps us study how an outcome relates to one or more explanatory variables. For example, we might investigate how a construction project's square footage relates to its completion time.\
+\
+In this tutorial, we will find a dataset, load it into Python, select variables, and build a linear regression model.\
+\
+## 1. Find a Data Set\
+\
+Start with a question you want to answer:\
+\
+> How does a construction project's square footage relate to its duration?\
+\
+Find data that includes both measurements. You could use a public dataset, a dataset provided for a class, or records you are authorized to analyze.\
+\
+Before downloading the data, check:\
+\
+- What each row represents.\
+- How each variable is measured.\
+- Whether values are missing.\
+- Whether the observations are relevant to your question.\
+- Whether you have permission to use and share the data.\
+\
+For this example, assume we have a CSV file named `construction_data.csv` with these columns:\
+\
+| Column | Description |\
+|---|---|\
+| `square_feet` | Project size in square feet |\
+| `duration_days` | Project duration in days |\
+| `crew_size` | Number of workers assigned to the project |\
+\
+These are example column names. Replace them with the names in your actual dataset.\
+\
+## 2. Load the Data\
+\
+We will use `pandas` to work with the data and `statsmodels` to fit the regression.\
+\
+If these packages are not installed, run this command in your terminal:\
+\
+```bash\
+python -m pip install pandas statsmodels\
+```\
+\
+Then import the packages and read the CSV file:\
+\
+```python\
+import pandas as pd\
+import statsmodels.formula.api as smf\
+\
+data = pd.read_csv("construction_data.csv")\
+```\
+\
+For this relative file path to work, the CSV must be in Python's current working directory.\
+\
+Inspect the data before analyzing it:\
+\
+```python\
+print(data.head())\
+print(data.columns)\
+print(data.dtypes)\
+print(data.isna().sum())\
+```\
+\
+These commands display the first few rows, column names, data types, and number of missing values in each column.\
+\
+Check that numeric measurements were loaded as numeric columns. Unexpected text, units, or formatting can prevent the model from treating them correctly.\
+\
+## 3. Select Your Variables\
+\
+Choose the outcome you want to explain and the predictor you want to use.\
+\
+For our question:\
+\
+- Response variable: `duration_days`.\
+- Predictor variable: `square_feet`.\
+\
+Select these columns:\
+\
+```python\
+model_data = data[["duration_days", "square_feet"]].copy()\
+```\
+\
+For this introductory example, remove rows missing either selected variable:\
+\
+```python\
+print("Rows before cleaning:", len(model_data))\
+\
+model_data = model_data.dropna()\
+\
+print("Rows after cleaning:", len(model_data))\
+print(model_data.describe())\
+```\
+\
+Removing incomplete rows is a simple starting point, but it can change which projects your analysis represents. Investigate why values are missing rather than treating deletion as an automatic solution.\
+\
+Also check for implausible values and confirm that all measurements use consistent units.\
+\
+## 4. Build Your Linear Model\
+\
+A simple linear regression model has this structure:\
+\
+```text\
+duration_days = intercept + slope \'d7 square_feet + error\
+```\
+\
+The intercept represents the modeled duration when square footage is zero. The slope represents the modeled change in duration associated with one additional square foot.\
+\
+The error captures the difference between an observed duration and the model's underlying relationship.\
+\
+### Fit the model in Python\
+\
+Use this formula:\
+\
+```python\
+model = smf.ols(\
+    formula="duration_days ~ square_feet",\
+    data=model_data\
+).fit()\
+```\
+\
+The formula reads:\
+\
+```text\
+response variable ~ predictor variable\
+```\
+\
+Here is what the code does:\
+\
+- `smf.ols()` sets up an ordinary least squares regression.\
+- `"duration_days ~ square_feet"` identifies the response and predictor.\
+- `data=model_data` identifies the dataset containing those columns.\
+- `.fit()` estimates the model's coefficients.\
+\
+The formula interface includes an intercept by default. Ordinary least squares chooses coefficients that minimize the sum of squared residuals\'97the squared differences between observed and fitted outcomes.\
+\
+### View the results\
+\
+```python\
+print(model.summary())\
+print(model.params)\
+```\
+\
+The summary includes coefficient estimates, standard errors, confidence intervals, p-values, and R-squared.\
+\
+For illustration only, suppose the fitted equation were:\
+\
+```text\
+predicted duration_days = 30 + 0.002 \'d7 square_feet\
+```\
+\
+A 10,000-square-foot project would then have a predicted duration of:\
+\
+```text\
+30 + 0.002 \'d7 10,000 = 50 days\
+```\
+\
+These coefficients are hypothetical, not results from an actual dataset.\
+\
+### Predict a new outcome\
+\
+Use the fitted model to predict duration for a new project:\
+\
+```python\
+new_project = pd.DataFrame(\{\
+    "square_feet": [10000]\
+\})\
+\
+predicted_duration = model.predict(new_project)\
+\
+print(predicted_duration)\
+```\
+\
+The prediction uses the coefficients estimated from your data. Avoid predicting far outside the range of project sizes used to fit the model.\
+\
+### Add another predictor\
+\
+To include crew size, select the necessary columns and fit a new model:\
+\
+```python\
+multiple_model_data = data[\
+    ["duration_days", "square_feet", "crew_size"]\
+].dropna()\
+\
+multiple_model = smf.ols(\
+    formula="duration_days ~ square_feet + crew_size",\
+    data=multiple_model_data\
+).fit()\
+\
+print(multiple_model.summary())\
+```\
+\
+The model now has this structure:\
+\
+```text\
+duration_days =\
+    intercept\
+    + coefficient_1 \'d7 square_feet\
+    + coefficient_2 \'d7 crew_size\
+    + error\
+```\
+\
+Each coefficient describes an association with duration while holding the other included predictor constant.\
+\
+## 5. Check Before Drawing Conclusions\
+\
+Fitting the model is only part of the analysis. Before interpreting it:\
+\
+- Check whether the relationship is reasonably linear.\
+- Examine residuals for patterns or changing spread.\
+- Investigate unusual or influential observations.\
+- Consider whether observations are independent.\
+- If prediction is your goal, evaluate accuracy on data not used to fit the model.\
+\
+Normality of the errors is relevant to conventional small-sample inference, not a requirement for calculating the fitted coefficients.\
+\
+A high R-squared does not automatically mean the model is appropriate, and an association does not establish causation. For example, larger crews may be assigned to more difficult projects, so a crew-size coefficient should not automatically be interpreted as the effect of hiring additional workers.\
+\
+The goal is to build a model that answers your question and remains credible when checked against the data.}
