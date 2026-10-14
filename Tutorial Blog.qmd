@@ -113,13 +113,7 @@ model = smf.ols(\
     data=model_data\
 ).fit()\
 ```
-\
-The formula reads:\
-\
-```text\
-response variable ~ predictor variable\
-```\
-\
+
 Here is what the code does:\
 \
 - `smf.ols()` sets up an ordinary least squares regression.\
@@ -134,52 +128,48 @@ The formula interface includes an intercept by default. Ordinary least squares c
 ```python
 print(model.summary())\
 print(model.params)\
-```\
+```
 
-The summary includes coefficient estimates, standard errors, confidence intervals, p-values, and R-squared.\
-\
-For illustration only, suppose the fitted equation were:\
-\
+The summary includes coefficient estimates, standard errors, confidence intervals, p-values, and R-squared.
 
-```text\
-predicted price = 30 + 0.002 \'d7 age\
-```\
+For illustration only, suppose the fitted equation were:
 
-\
+
+predicted price = 30 + 0.002 $\cdot$ age
+
+
+
 A year old project would then have a predicted duration of:\
 \
-```text\
-30 + 0.002 \'d7 10,000 = 50 dollars (in units of $10000\
-```\
-\
-These coefficients are hypothetical, not results from an actual dataset.\
-\
+```text
+30 + 0.002  = 30.002 dollars (in units of $10000)
+```
+
+These coefficients are hypothetical, not results from an actual dataset.
+
 ### Predict a new outcome\
-\
-Use the fitted model to predict price for a new project:\
-\
+
+Use the fitted model to predict price for a new project:
 
 ```python
 new_house = pd.DataFrame(\{\
-    "age": [10000]\
+    "age": [5]\
 \})\
-\
-predicted_price = model.predict(new_house)\
-\
-print(predicted_price)\
+predicted_price = model.predict(new_house)
+print(predicted_price)
 ```
-\
-The prediction uses the coefficients estimated from your data. Avoid predicting far outside the range of project sizes used to fit the model.\
-\
+
+The prediction uses the coefficients estimated from your data. Avoid predicting far outside the range of project sizes used to fit the model.
+
 ### Add another predictor\
-\
-To include cstores, select the necessary columns and fit a new model:\
-\
+
+To include cstores, select the necessary columns and fit a new model:
+
 ```python
 multiple_model_data = data[\
     ["price", "age", "stores"]\
 ].dropna()\
-\
+
 multiple_model = smf.ols(\
     formula="price ~ age + stores",\
     data=multiple_model_data\
@@ -187,17 +177,17 @@ multiple_model = smf.ols(\
 \
 print(multiple_model.summary())\
 ```
-\
+
 The model now has this structure:\
 
-duration_days =\
-    intercept\
-    + coefficient_1 \'age\
-    + coefficient_2 \'stores\
-    + error\
+$$ Price =
+     \hat{\beta}_0
+    + \hat{\beta}_1 \cdot age\
+    + \hat{\beta}_2 \cdot stores\
+    + \varepsilon $$
 
 
-Each coefficient describes an association with duration while holding the other included predictor constant.
+Each coefficient describes an association with Price while holding the other included predictorss constant.
 
 ## 5. Check Before Drawing Conclusions\
 
