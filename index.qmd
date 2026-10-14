@@ -1,7 +1,5 @@
 ---
-title: "Website"
+title: "Welcome to the Blog!"
 ---
 
-This is a Quarto website.
-
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+In this tutorial I am going to show you how to do simple linear regression on data and a question of your choosing. You can follow along with a data set of your choosing or use the data set in this tutorial( found here). Linear regression is a very useful tool in *data science* and statistics. Linear regression allows you to show the effect of one or more predictor variables on a response variable you are interested in.
