@@ -1,9 +1,6 @@
 ### Tutorial on Linear Regression
 
-In this tutorial I am going to show you how to do simple linear regression on data and a question of your choosing. You can follow along with a data set of your choosing or use the data set in this tutorial( found here). Linear regression is a very useful tool in *data science* and statistics. Linear regression allows you to show the effect of one or more predictor variables on a response variable you are interested in.
-
-tutorial body
-## 1. Find a Data Set
+## 1. Find a Data Set\
 Start with a question you want to answer: My question is: how does age and number of nearby stores affect the price of a house. 
 
 Before we start our analysis let's check a few things. 
@@ -15,6 +12,9 @@ Before we start our analysis let's check a few things.
 - Whether you have permission to use and share the data.
 
 For this example, assume we have a txt file named `RealEstate copy.txt` with these columns:\
+
+[Download Data Here](https://github.com/coltrandventura4-spec/Coltran-s_website/blob/62d3062f349bbd00ea05b702025818815be21e79/RealEstate%20copy.txt)
+
 \
 | Column | Description |\
 |---|---|\
@@ -35,7 +35,7 @@ python -m pip install pandas statsmodels
 
 Then import the packages and read the CSV file:
 
-python
+```python
 import pandas as pd
 import statsmodels.formula.api as smf
 
@@ -46,12 +46,14 @@ the `sep` argument tells the pd.read_csv function what your values are separated
 For this relative file path to work, the CSV must be in Python's current working directory.
 
 Inspect the data before analyzing it:
+```
 
-python
+```python
 print(data.head())
 print(data.columns)
 print(data.dtypes)
 print(data.isna().sum())
+```
 
 
 These commands display the first few rows, column names, data types, and number of missing values in each column.
@@ -92,24 +94,25 @@ Also check for implausible values and confirm that all measurements use consiste
 
 A simple linear regression model has this structure:
 
-```text
-duration_days = intercept + slope \'d7 age + error\
-```\
+$$
+\widehat{\text{Price}} = \hat{\beta}_0 + \hat{\beta}_1 \cdot \text{Age} + \varepsilon
+$$
 
-The intercept represents the modeled duration when age is zero. The slope represents the modeled change in price associated with one additional year.\
+The $\hat{\beta}_0$ represents the intercept which is the modeled duration when age is zero. $\hat{\beta}_1$ represents the modeled change in price associated with one additional year.\
 \
-The error captures the difference between an observed duration and the model's underlying relationship.\
+The error ($\varepsilon$) captures the difference between an observed duration and the model's underlying relationship.\
 \
 ### Fit the model in Python\
 \
 Use this formula:\
 \
-```python\
+
+```python
 model = smf.ols(\
     formula="price ~ age",\
     data=model_data\
 ).fit()\
-```\
+```
 \
 The formula reads:\
 \
@@ -126,25 +129,27 @@ Here is what the code does:\
 \
 The formula interface includes an intercept by default. Ordinary least squares chooses coefficients that minimize the sum of squared residuals\'97the squared differences between observed and fitted outcomes.\
 \
-### View the results\
-\
-```python\
+### View the results
+
+```python
 print(model.summary())\
 print(model.params)\
 ```\
-\
+
 The summary includes coefficient estimates, standard errors, confidence intervals, p-values, and R-squared.\
 \
 For illustration only, suppose the fitted equation were:\
 \
+
 ```text\
 predicted price = 30 + 0.002 \'d7 age\
 ```\
+
 \
 A year old project would then have a predicted duration of:\
 \
 ```text\
-30 + 0.002 \'d7 10,000 = 50 days\
+30 + 0.002 \'d7 10,000 = 50 dollars (in units of $10000\
 ```\
 \
 These coefficients are hypothetical, not results from an actual dataset.\
@@ -153,7 +158,8 @@ These coefficients are hypothetical, not results from an actual dataset.\
 \
 Use the fitted model to predict price for a new project:\
 \
-```python\
+
+```python
 new_house = pd.DataFrame(\{\
     "age": [10000]\
 \})\
@@ -161,7 +167,7 @@ new_house = pd.DataFrame(\{\
 predicted_price = model.predict(new_house)\
 \
 print(predicted_price)\
-```\
+```
 \
 The prediction uses the coefficients estimated from your data. Avoid predicting far outside the range of project sizes used to fit the model.\
 \
@@ -169,7 +175,7 @@ The prediction uses the coefficients estimated from your data. Avoid predicting 
 \
 To include cstores, select the necessary columns and fit a new model:\
 \
-```python\
+```python
 multiple_model_data = data[\
     ["price", "age", "stores"]\
 ].dropna()\
@@ -180,20 +186,20 @@ multiple_model = smf.ols(\
 ).fit()\
 \
 print(multiple_model.summary())\
-```\
+```
 \
 The model now has this structure:\
-\
-```text\
+
 duration_days =\
     intercept\
     + coefficient_1 \'age\
     + coefficient_2 \'stores\
     + error\
-```\
+
 
 Each coefficient describes an association with duration while holding the other included predictor constant.
-## 5. Check Before Drawing Conclusions
+
+## 5. Check Before Drawing Conclusions\
 
 Fitting the model is only part of the analysis. Before interpreting it:
 
@@ -208,3 +214,5 @@ Normality of the errors is relevant to conventional small-sample inference, not 
 A high R-squared does not automatically mean the model is appropriate, and an association does not establish causation. For example, larger crews may be assigned to more difficult projects, so a crew-size coefficient should not automatically be interpreted as the effect of hiring additional workers.
 
 The goal is to build a model that answers your question and remains credible when checked against the data.
+
+
