@@ -3,12 +3,12 @@ project:
   output-dir: docs
 
 website:
-  title: "Coltran's Practice Website"
+  title: "Tutorial Blog on Linear Regression"
   navbar:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - Tutorial Blog.qmd
 
 format:
   html:
